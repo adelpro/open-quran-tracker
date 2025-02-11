@@ -49,7 +49,7 @@ MAGNETLINKS.forEach((magnet) => {
   const infoHash = infoHashMatch[1];
 
   // Check if the torrent already exists
-  const torrent = client.get(infoHash);
+  const torrent = await client.get(infoHash);
   if (torrent) {
     const name = torrent.name;
     const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
