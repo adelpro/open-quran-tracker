@@ -1,6 +1,6 @@
 {
   "name": "webtorrent-seeder",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "seed.mjs",
   "description": "A Node.js backend for open-quran application for seeding torrents using WebTorrent.",
   "scripts": {
