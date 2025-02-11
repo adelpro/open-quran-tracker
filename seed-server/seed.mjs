@@ -54,8 +54,9 @@ MAGNETLINKS.forEach((magnet) => {
     const name = torrent.name;
     const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
     const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
-    console.log(log.info(`Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`));  
-    console.log(log.warning(`Torrent ${infoHash} already added; skipping.`));
+    console.log(log.info(`Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`)); 
+    console.log('torrent: ', torrent); 
+    console.log(log.warning(`Torrent ${name} (${infoHash}) already added; skipping.`));
     return;
   }
 
