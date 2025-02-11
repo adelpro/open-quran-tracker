@@ -1,4 +1,4 @@
-const TRACKERS = [
+export const TRACKERS = [
     'ws://tracker:8083',
     'wss://tracker.openquran.us.kg',
     'https://tracker.openquran.us.kg/annance',
@@ -53,5 +53,3 @@ const TRACKERS = [
     'https://tr.kxmp.cf:80/announce',
     'https://explodie.org:6969/announce'
 ];
-
-export default TRACKERS
