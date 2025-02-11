@@ -4,6 +4,8 @@ import chalk from 'chalk';
 import WebTorrent from 'webtorrent';
 import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
+import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
+import getNameFromMagnetLink from './utils/getNameFromMagnetLink';
 
 events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
@@ -49,7 +51,7 @@ const options = {
 async function processMagnetLinks() {
   for (const magnet of MAGNETLINKS) {
     // Extract the info hash from the magnet link
-    const infoHash = getInfoHashFromMagnetLink
+    const infoHash = getInfoHashFromMagnetLink(magnet);
 
     if (!infoHash) {
       console.log(log.error('Invalid magnet link:', magnet));
