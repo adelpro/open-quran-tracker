@@ -40,13 +40,7 @@ const client = new WebTorrent({ maxConns: 200, dht: true, ut_pex: true });
 
 const options = {
   path: downloadPath,
-  announce: [
-    'ws://tracker:8083',
-    "wss://tracker.openquran.us.kg",
-    "https://tracker.openquran.us.kg/announce",
-    'wss://tracker.openwebtorrent.com',
-    'wss://tracker.btorrent.xyz',
-    'wss://tracker.webtorrent.dev']
+  announce: TRACKERS
 };
 
 async function processMagnetLinks() {
