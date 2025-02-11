@@ -5,7 +5,7 @@ import WebTorrent from 'webtorrent';
 import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 
-//events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
+events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
 const downloadPath = '/app/downloads';
 
@@ -34,7 +34,7 @@ if (!fs.existsSync(downloadPath)) {
   console.log(log.warning('📂 Downloads folder already exists'));
 }
 
-const client = new WebTorrent({ maxConns: 100, dht: true, ut_pex: true });
+const client = new WebTorrent({ maxConns: 200, dht: true, ut_pex: true });
 
 const options = {
   path: downloadPath,
@@ -55,7 +55,6 @@ async function processMagnetLinks() {
       // Check if the torrent already exists
       const torrent = await client.get(infoHash);
       if (torrent) {
-        torrent.setma
         const name = torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
         const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
@@ -71,7 +70,9 @@ async function processMagnetLinks() {
         continue;
       }
 
-      client.add(magnet, { ...options }, function (torrent) {
+      console.log('torrent not found, continue')
+
+  /*     client.add(magnet, { ...options }, function (torrent) {
         console.log(log.peer(`Torrent added: ${torrent.infoHash}`));
 
         // Add speed tracking interval
@@ -90,7 +91,7 @@ async function processMagnetLinks() {
           clearInterval(speedInterval);
           console.log(log.peer(`Download completed: ${torrent.name}`));
         });
-      });
+      }); */
     } catch (error) {
       console.log(log.error(`Error processing magnet link: ${error.message}`));
     }
