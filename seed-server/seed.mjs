@@ -42,6 +42,7 @@ const options = {
   path: downloadPath,
   announce: [
     'ws://tracker:8083',
+    "wss://tracker.openquran.us.kg",
     "https://tracker.openquran.us.kg/announce",
     'wss://tracker.openwebtorrent.com',
     'wss://tracker.btorrent.xyz',
@@ -70,7 +71,6 @@ async function processMagnetLinks() {
             `Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`
           )
         );
-        console.log('torrent: ', torrent);
         console.log(
           log.warning(`Torrent ${name} (${infoHash}) already added; skipping.`)
         );
