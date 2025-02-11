@@ -50,7 +50,7 @@ async function processMagnetLinks() {
 
     try {
       // Check if the torrent already exists
-      const torrent = await client.get(infoHash);
+      const torrent = client.get(infoHash);
       if (torrent) {
         const name = torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
