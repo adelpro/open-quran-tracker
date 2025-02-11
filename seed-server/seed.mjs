@@ -39,7 +39,7 @@ const options = {
   announce: TRACKERS
 };
 
-MAGNETLINKS.forEach((magnet) => {
+MAGNETLINKS.forEach(async (magnet) => {
   // Extract the info hash from the magnet link (assuming the magnet link format is standard)
   const infoHashMatch = magnet.match(/btih:([a-zA-Z0-9]+)/);
   if (!infoHashMatch) {
