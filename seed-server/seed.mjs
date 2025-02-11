@@ -38,7 +38,10 @@ const client = new WebTorrent({ maxConns: 200, dht: true, ut_pex: true });
 
 const options = {
   path: downloadPath,
-  announce: TRACKERS,
+  announce: [
+    'wss://tracker.openwebtorrent.com',
+    'wss://tracker.btorrent.xyz',
+    'wss://tracker.webtorrent.dev']
 };
 
 async function processMagnetLinks() {
