@@ -1,7 +1,7 @@
 # Use a Node.js base image
 FROM node:18-alpine
 
-LABEL maintainer="Adelpro <contact@gmail.com>"
+LABEL maintainer="Adelpro <adelpro@gmail.com>"
 LABEL name="open-quran-tracker"
 LABEL version="1.1"
 
