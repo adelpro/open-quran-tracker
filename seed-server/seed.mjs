@@ -5,7 +5,7 @@ import WebTorrent from 'webtorrent';
 import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
-import getNameFromMagnetLink from './utils/getNameFromMagnetLink';
+import getNameFromMagnetLink from './utils/getNameFromMagnetLink.js';
 
 events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
