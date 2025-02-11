@@ -1,4 +1,4 @@
-export const magnetLinks = [
+export const MAGNETLINKS = [
     'magnet:?xt=urn:btih:14cfaedfe76a3aafc2ae58f17eb4f830ff964aca&dn=Maher_Al-Muaiqly&tr=https%3A%2F%2Ftorrent.islamhouse.com%2Fannounce.php&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com',
     'magnet:?xt=urn:btih:eb11251ff351a202a72f2959fae7e3a4183a6fb9&dn=AbdulRahman_Al-Sudais&tr=http%3A%2F%2Ftorrent.islamhouse.com%2Fannounce.php&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com',
     'magnet:?xt=urn:btih:f456e1a32123a31b3e80148ba66301b768303acc&dn=Saad_Alghamdi&tr=http%3A%2F%2Ftorrent.mp3quran.net%2Fannounce.php&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com',
