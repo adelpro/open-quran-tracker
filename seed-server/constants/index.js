@@ -1,3 +1,3 @@
-export * from './TRACKERS'
+export * from './TRACKERS.js'
 
-export * from './MAGNETLINKS'
+export * from './MAGNETLINKS.js'
