@@ -70,9 +70,9 @@ async function processMagnetLinks() {
         continue;
       }
 
-      console.log('torrent not found, continue')
+     
 
-  /*     client.add(magnet, { ...options }, function (torrent) {
+       client.add(magnet, { ...options }, function (torrent) {
         console.log(log.peer(`Torrent added: ${torrent.infoHash}`));
 
         // Add speed tracking interval
@@ -91,7 +91,7 @@ async function processMagnetLinks() {
           clearInterval(speedInterval);
           console.log(log.peer(`Download completed: ${torrent.name}`));
         });
-      }); */
+      });
     } catch (error) {
       console.log(log.error(`Error processing magnet link: ${error.message}`));
     }
