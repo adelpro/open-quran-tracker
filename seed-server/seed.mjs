@@ -38,7 +38,7 @@ const client = new WebTorrent({ maxConns: 200, dht: true, ut_pex: true });
 
 const options = {
   path: downloadPath,
-  //announce: TRACKERS,
+  announce: TRACKERS,
 };
 
 async function processMagnetLinks() {
