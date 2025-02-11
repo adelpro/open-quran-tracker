@@ -1,0 +1,23 @@
+services:
+  tracker:
+    build: ./tracker
+    image: open-quran-tracker:1.1
+    ports:
+      - "8083:8083"  # Map port 8083 for the tracker
+    networks:
+      - webtorrent-net
+
+  seed-server:
+    build: ./seed-server
+    image: open-quran-seeder:1.1
+    volumes:
+      - ./seed-server/seed.mjs:/app/seed.mjs  # Mount your seed.js script
+      - ./seed-server/downloads:/app/downloads  # Mount the downloads directory
+    networks:
+      - webtorrent-net
+    depends_on:
+      - tracker
+
+networks:
+  webtorrent-net:
+    driver: bridge  # Ensure network is using the bridge driver
