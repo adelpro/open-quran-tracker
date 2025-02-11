@@ -29,7 +29,7 @@ if (!fs.existsSync(downloadPath)) {
   console.log(log.warning('📂 Downloads folder already exists'));
 }
 
-const client = new WebTorrent({ maxConns: 500 });
+const client = new WebTorrent({ maxConns: 50 });
 
 const magnetLinks = [
   'magnet:?xt=urn:btih:f456e1a32123a31b3e80148ba66301b768303acc&dn=Saad_Alghamdi_(MP3_Quran)&tr=http%3A%2F%2Ftorrent.mp3quran.net%2Fannounce.php&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com',
