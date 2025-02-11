@@ -72,7 +72,7 @@ async function processMagnetLinks() {
 
      
 
-       client.add(magnet, { ...options }, function (torrent) {
+       client.add(magnet,  function (torrent) {
         console.log(log.peer(`Torrent added: ${torrent.infoHash}`));
 
         // Add speed tracking interval
