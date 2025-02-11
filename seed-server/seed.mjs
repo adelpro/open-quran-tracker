@@ -49,8 +49,13 @@ MAGNETLINKS.forEach((magnet) => {
   const infoHash = infoHashMatch[1];
 
   // Check if the torrent already exists
-  if (client.get(infoHash)) {
-    console.log(log.info(`Torrent ${infoHash} already added; skipping.`));
+  const torrent = client.get(infoHash);
+  if (torrent) {
+    const name = torrent.name;
+    const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
+    const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
+    console.log(log.info(`Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`));  
+    console.log(log.warning(`Torrent ${infoHash} already added; skipping.`));
     return;
   }
 
@@ -64,7 +69,7 @@ MAGNETLINKS.forEach((magnet) => {
       `Progress: ${(torrent.progress * 100).toFixed(1)}%`)
     );
   }, 5000); // Update every 5 seconds
-
+ 
     torrent.on('done', () => {
       clearInterval(speedInterval);
       console.log(log.peer(`Download completed: ${torrent.name}`));
