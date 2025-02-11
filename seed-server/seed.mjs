@@ -5,7 +5,7 @@ import WebTorrent from 'webtorrent';
 import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 
-events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
+//events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
 const downloadPath = '/app/downloads';
 
