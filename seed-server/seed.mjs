@@ -94,7 +94,7 @@ async function processMagnetLinks() {
 }
 
 // Start processing magnet links
-processMagnetLinks();
+await processMagnetLinks();
 
 // Handle shutdown gracefully
 process.on('SIGINT', async () => {
