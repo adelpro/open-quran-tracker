@@ -12,7 +12,7 @@ services:
     image: open-quran-seeder:1.1
     volumes:
       - ./seed-server/seed.mjs:/app/seed.mjs  # Mount your seed.js script
-      - ./seed-server/downloads:/app/downloads  # Mount the downloads directory
+      - seed_downloads:/app/downloads  # Mount the downloads directory
     networks:
       - webtorrent-net
     depends_on:
@@ -21,3 +21,6 @@ services:
 networks:
   webtorrent-net:
     driver: bridge  # Ensure network is using the bridge driver
+
+volumes:
+  seed_downloads:    

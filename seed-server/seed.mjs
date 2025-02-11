@@ -49,18 +49,18 @@ const options = {
 async function processMagnetLinks() {
   for (const magnet of MAGNETLINKS) {
     // Extract the info hash from the magnet link
-    const infoHashMatch = magnet.match(/btih:([a-zA-Z0-9]+)/);
-    if (!infoHashMatch) {
+    const infoHash = getInfoHashFromMagnetLink
+
+    if (!infoHash) {
       console.log(log.error('Invalid magnet link:', magnet));
       continue;
     }
-    const infoHash = infoHashMatch[1];
-
+  
     try {
       // Check if the torrent already exists
       const torrent = await client.get(infoHash);
       if (torrent) {
-        const name = torrent.name;
+        const name = getNameFromMagnetLink(magnet) || torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
         const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
         console.log(
