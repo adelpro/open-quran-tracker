@@ -1,7 +1,7 @@
 import fs from 'fs';
 import chalk from 'chalk';
 import WebTorrent from 'webtorrent';
-import  TRACKERS  from './constants/TRACKERS';
+import  TRACKERS  from './constants/TRACKERS.js';
 import  MAGNETLINKS  from './constants/MAGNETLINKS';
 
 const downloadPath = '/app/downloads';
