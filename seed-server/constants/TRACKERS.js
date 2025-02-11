@@ -1,7 +1,5 @@
 const TRACKERS = [
-  "ws://tracker:8083",
-  "wss://tracker.openquran.us.kg",
-  "https://tracker.openquran.us.kg/announce",
+  "ws://tracker:8083",  
   "wss://tracker.openwebtorrent.com",
   "wss://tracker.btorrent.xyz",
   "wss://tracker.webtorrent.dev",
@@ -22,6 +20,8 @@ const TRACKERS = [
   "udp://open.stealth.si:80",
   "udp://tracker.torrent.eu.org:451",
   "udp://tracker.cyberia.is:6969",
+  "wss://tracker.openquran.us.kg",
+  //"https://tracker.openquran.us.kg/announce",
 ];
 
 export default TRACKERS;
