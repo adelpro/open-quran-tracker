@@ -1,8 +1,11 @@
 import fs from 'fs';
+import events from 'events'
 import chalk from 'chalk';
 import WebTorrent from 'webtorrent';
 import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
+
+events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
 const downloadPath = '/app/downloads';
 
@@ -52,6 +55,7 @@ async function processMagnetLinks() {
       // Check if the torrent already exists
       const torrent = await client.get(infoHash);
       if (torrent) {
+        torrent.setma
         const name = torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
         const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
