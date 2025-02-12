@@ -1,16 +1,17 @@
-import fs from 'fs';
-import events from 'events'
 import chalk from 'chalk';
+import events from 'events';
+import fs from 'fs';
 import WebTorrent from 'webtorrent';
-import TRACKERS from './constants/TRACKERS.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
+import TRACKERS from './constants/TRACKERS.js';
 import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
-
-events.EventEmitter.defaultMaxListeners = 20; // Adjust the number as needed
 
 // CONSTANTS
 const DOWNLOAD_PATH = '/app/downloads';
-const MAX_CONNS = 100
+const MAX_CONNS = 100;
+const MAX_LISTENERS = 20;
+
+events.EventEmitter.defaultMaxListeners = MAX_LISTENERS; // Adjust the number as needed
 
 // Initialize with color themes
 const log = {
@@ -90,25 +91,43 @@ async function processMagnetLinks() {
           );
         }, 5000); // Update every 5 seconds
 
-        torrent.on('done', () => {
+        const cleanup = () => {
           clearInterval(speedInterval);
+          torrent.removeAllListeners();
+        };
+
+        torrent.on('done', () => {
           console.log(log.peer(`Download completed: ${torrent.name}`));
+          cleanup();
         });
-        
-    } catch (error) {
+
+        torrent.on('error', (err) => {         
+          console.log(log.error(`Error in torrent ${torrent.name}: ${err.message}`));
+          cleanup();
+        });
+
+    }
+  } catch (error) {
       console.log(log.error(`Error processing magnet link: ${error.message}`));
     }
   }
 }
 
+function gracefulShutdown() {
+  log.info('\n🛑 Shutting down gracefully...');
+  client.destroy((err) => {
+    if (err) {
+      log.error(`❌ Error during client destruction: ${err.message}`);
+      process.exit(1);
+    } else {
+      log.success('✅ Client destroyed successfully.');
+      process.exit(0);
+    }
+  });
+}
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+
 // Start processing magnet links
 await processMagnetLinks();
-
-// Handle shutdown gracefully
-process.on('SIGINT', async () => {
-  console.log(log.info('\n🛑 Shutting down gracefully...'));
-  client.destroy((err) => {
-    if (err) console.log(log.error(`❌ Shutdown error: ${err.message}`));
-    process.exit(err ? 1 : 0);
-  });
-});
