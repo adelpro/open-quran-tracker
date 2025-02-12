@@ -72,9 +72,7 @@ async function processMagnetLinks() {
         );
         torrent.removeAllListeners;
         continue;
-      }
-
-     
+      }     
 
        client.add(magnet, options, function (torrent) {
         console.log(log.peer(`Torrent added: ${torrent.infoHash}`));
@@ -106,7 +104,7 @@ async function processMagnetLinks() {
           cleanup();
         });
 
-    }
+    });
   } catch (error) {
       console.log(log.error(`Error processing magnet link: ${error.message}`));
     }
