@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import events from 'events';
 import fs from 'fs';
 import WebTorrent from 'webtorrent';
+import Semaphore from './units/semaphore'
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 import TRACKERS from './constants/TRACKERS.js';
 import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
@@ -10,6 +11,7 @@ import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
 const DOWNLOAD_PATH = '/app/downloads';
 const MAX_CONNS = 100;
 const MAX_LISTENERS = 20;
+const MAX_CONCURRENT_DOWNLOADS = 3;
 
 events.EventEmitter.defaultMaxListeners = MAX_LISTENERS; // Adjust the number as needed
 
@@ -40,6 +42,8 @@ if (!fs.existsSync(DOWNLOAD_PATH)) {
 
 const client = new WebTorrent({ maxConns: MAX_CONNS, dht: true, ut_pex: true });
 
+const semaphore = new Semaphore(MAX_CONCURRENT_DOWNLOADS);
+
 const options = {
   path: DOWNLOAD_PATH,
   announce: TRACKERS
@@ -50,8 +54,13 @@ async function processMagnetLinks() {
     // Extract the info hash from the magnet link
     const infoHash = getInfoHashFromMagnetLink(magnet);
 
+    // Try to acquire new slote
+    await semaphore.acquire();
+
     if (!infoHash) {
       console.log(log.error('Invalid magnet link:', magnet));
+      await semaphore.release();
+
       continue;
     }
   
@@ -70,7 +79,7 @@ async function processMagnetLinks() {
         console.log(
           log.warning(`Torrent ${name} (${infoHash}) - ${totalSize} MB already added; skipping.`)
         );
-        torrent.removeAllListeners;
+        semaphore.release();
         continue;
       }     
 
@@ -91,6 +100,7 @@ async function processMagnetLinks() {
 
         const cleanup = () => {
           clearInterval(speedInterval);
+          semaphore.release();
           torrent.removeAllListeners();
         };
 
@@ -107,6 +117,7 @@ async function processMagnetLinks() {
     });
   } catch (error) {
       console.log(log.error(`Error processing magnet link: ${error.message}`));
+      semaphore.release();
     }
   }
 }
