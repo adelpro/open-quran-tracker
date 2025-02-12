@@ -30,7 +30,7 @@ const log = {
 };
 
 // Validate trackers configuration
-if (!Array.isArray(TRACKERS) {
+if (!Array.isArray(TRACKERS)) {
   console.log(log.error('❌ Invalid trackers configuration'));
   process.exit(1);
 }
