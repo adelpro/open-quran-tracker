@@ -35,9 +35,9 @@ function formatSpeed(bytesPerSecond) {
 // Ensure the downloads folder exists
 if (!fs.existsSync(DOWNLOAD_PATH)) {
   fs.mkdirSync(DOWNLOAD_PATH, { recursive: true });
-  console.log(log.info('✅ Created downloads folder'));
+  log.info('✅ Created downloads folder');
 } else {
-  console.log(log.warning('📂 Downloads folder already exists'));
+  log.warning('📂 Downloads folder already exists');
 }
 
 const client = new WebTorrent({ maxConns: MAX_CONNS, dht: true, ut_pex: true });
@@ -58,7 +58,7 @@ async function processMagnetLinks() {
     await semaphore.acquire();
 
     if (!infoHash) {
-      console.log(log.error('Invalid magnet link:', magnet));
+      log.error('Invalid magnet link:', magnet);
       await semaphore.release();
 
       continue;
@@ -71,31 +71,23 @@ async function processMagnetLinks() {
         const name = torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
         const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
-        console.log(
-          log.info(
-            `Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`
-          )
-        );
-        console.log(
-          log.warning(`Torrent ${name} (${infoHash}) - ${totalSize} MB already added; skipping.`)
-        );
+        log.info(`Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`)
+        log.warning(`Torrent ${name} (${infoHash}) - ${totalSize} MB already added; skipping.`)
         semaphore.release();
         continue;
       }     
 
        client.add(magnet, options, function (torrent) {
-        console.log(log.peer(`Torrent added: ${torrent.infoHash}`));
+        log.peer(`Torrent added: ${torrent.infoHash}`);
 
         // Add speed tracking interval
         const speedInterval = setInterval(() => {
-          console.log(
-            log.stats(
+          log.stats(
               `[${torrent.name}] ↓ ${formatSpeed(
                 torrent.downloadSpeed
               )}/s | ↑ ${formatSpeed(torrent.uploadSpeed)}/s | ` +
                 `Progress: ${(torrent.progress * 100).toFixed(1)}%`
             )
-          );
         }, 5000); // Update every 5 seconds
 
         const cleanup = () => {
@@ -105,18 +97,18 @@ async function processMagnetLinks() {
         };
 
         torrent.on('done', () => {
-          console.log(log.peer(`Download completed: ${torrent.name}`));
+          log.peer(`Download completed: ${torrent.name}`);
           cleanup();
         });
 
         torrent.on('error', (err) => {         
-          console.log(log.error(`Error in torrent ${torrent.name}: ${err.message}`));
+          log.error(`Error in torrent ${torrent.name}: ${err.message}`);
           cleanup();
         });
 
     });
   } catch (error) {
-      console.log(log.error(`Error processing magnet link: ${error.message}`));
+      log.error(`Error processing magnet link: ${error.message}`);
       semaphore.release();
     }
   }
