@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import events from 'events';
 import fs from 'fs';
 import WebTorrent from 'webtorrent';
+import Semaphore frol './utils/semaphore.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 import TRACKERS from './constants/TRACKERS.js';
 import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
