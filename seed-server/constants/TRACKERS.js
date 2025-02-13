@@ -1,10 +1,13 @@
 const TRACKERS = [
   "ws://tracker:8083", 
-  /* "wss://tracker.openquran.us.kg", */
-  "https://tracker.openquran.us.kg/announce", 
-  "wss://tracker.openwebtorrent.com",
-  "wss://tracker.btorrent.xyz",
-  "wss://tracker.webtorrent.dev",
+  'wss://tracker.openquran.us.kg',
+  'wss://tracker.webtorrent.dev:443/announce',
+  'wss://tracker.files.fm:7073/announce',
+  'ws://tracker.files.fm:7072/announce',
+  'wss://tracker.openwebtorrent.com:443/announce',
+  'wss://tracker.magnetoo.io:443/announce',
+  'wss://tracker.btorrent.xyz:443/announce',
+  'wss://spacetradersapi-chatbox.herokuapp.com:443/announce',
   "udp://tracker.coppersurfer.tk:6969",
   "udp://tracker.leechers-paradise.org:6969",
   "udp://tracker.opentrackr.org:1337",
