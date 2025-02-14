@@ -32,6 +32,9 @@ function formatSpeed(bytesPerSecond) {
   return `${(bytesPerSecond / Math.pow(1024, exp)).toFixed(1)} ${units[exp]}`;
 }
 
+// Starting the server
+log.info('🚀 Starting the server...');
+
 // Ensure the downloads folder exists
 if (!fs.existsSync(DOWNLOAD_PATH)) {
   fs.mkdirSync(DOWNLOAD_PATH, { recursive: true });
