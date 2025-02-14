@@ -51,15 +51,14 @@ const options = {
 
 async function processMagnetLinks() {
   const response = await fetch('https://openquran.us.kg/api/magnet-uris');
-  let fetchedMAGNETLINKS = await response.json();
-  console.log(fetchedMAGNETLINKS);
-  if (fetchedMAGNETLINKS === undefined) {
+  const { magneturis } = await response.json();
+  let fetchedMAGNETLINKS = magneturis
+  if (!Array.isArray(fetchedMAGNETLINKS)) {
     log.warning('Failed to fetch magnet links from openquran.us.kg/api/magnet-uris, loading default magnet links');
     fetchedMAGNETLINKS = MAGNETLINKS;
   } else {
     log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from openquran.us.kg/api/magnet-uris`);
   }
-  console.log(fetchedMAGNETLINKS);
 
   for (const magnet of fetchedMAGNETLINKS) {
     // Extract the info hash from the magnet link
