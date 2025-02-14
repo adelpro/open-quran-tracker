@@ -3,7 +3,6 @@ import events from 'events';
 import fs from 'fs';
 import WebTorrent from 'webtorrent';
 import Semaphore from './utils/semaphore.js';
-import MAGNETLINKS from './constants/MAGNETLINKS.js';
 import TRACKERS from './constants/TRACKERS.js';
 import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
 
@@ -51,6 +50,7 @@ const options = {
 
 async function processMagnetLinks() {
   const fetchedMAGNETLINKS = await fetch('https://openquran.us.kg/api/magnet-uris');
+  log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from openquran.us.kg/api/magnet-uris`);
   for (const magnet of fetchedMAGNETLINKS) {
     // Extract the info hash from the magnet link
     const infoHash = getInfoHashFromMagnetLink(magnet);
