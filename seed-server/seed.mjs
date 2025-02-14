@@ -50,7 +50,8 @@ const options = {
 };
 
 async function processMagnetLinks() {
-  for (const magnet of MAGNETLINKS) {
+  const fetchedMAGNETLINKS = await fetch('https://openquran.us.kg/api/magnet-uris');
+  for (const magnet of fetchedMAGNETLINKS) {
     // Extract the info hash from the magnet link
     const infoHash = getInfoHashFromMagnetLink(magnet);
 
@@ -63,7 +64,7 @@ async function processMagnetLinks() {
 
       continue;
     }
-  
+
     try {
       // Check if the torrent already exists
       const torrent = await client.get(infoHash);
@@ -75,19 +76,19 @@ async function processMagnetLinks() {
         log.warning(`Torrent ${name} (${infoHash}) - ${totalSize} MB already added; skipping.`)
         semaphore.release();
         continue;
-      }     
+      }
 
-       client.add(magnet, options, function (torrent) {
+      client.add(magnet, options, function (torrent) {
         log.peer(`Torrent added: ${torrent.infoHash}`);
 
         // Add speed tracking interval
         const speedInterval = setInterval(() => {
           log.stats(
-              `[${torrent.name}] ↓ ${formatSpeed(
-                torrent.downloadSpeed
-              )}/s | ↑ ${formatSpeed(torrent.uploadSpeed)}/s | ` +
-                `Progress: ${(torrent.progress * 100).toFixed(1)}%`
-            )
+            `[${torrent.name}] ↓ ${formatSpeed(
+              torrent.downloadSpeed
+            )}/s | ↑ ${formatSpeed(torrent.uploadSpeed)}/s | ` +
+            `Progress: ${(torrent.progress * 100).toFixed(1)}%`
+          )
         }, 5000); // Update every 5 seconds
 
         const cleanup = () => {
@@ -101,13 +102,13 @@ async function processMagnetLinks() {
           cleanup();
         });
 
-        torrent.on('error', (err) => {         
+        torrent.on('error', (err) => {
           log.error(`Error in torrent ${torrent.name}: ${err.message}`);
           cleanup();
         });
 
-    });
-  } catch (error) {
+      });
+    } catch (error) {
       log.error(`Error processing magnet link: ${error.message}`);
       semaphore.release();
     }
