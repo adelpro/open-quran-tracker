@@ -57,6 +57,7 @@ async function processMagnetLinks() {
   } else {
     log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from openquran.us.kg/api/magnet-uris`);
   }
+  console.log(fetchedMAGNETLINKS);
 
   for (const magnet of fetchedMAGNETLINKS) {
     // Extract the info hash from the magnet link
