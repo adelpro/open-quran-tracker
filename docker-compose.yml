@@ -6,7 +6,8 @@ services:
       - "8083:8083"  # Map port 8083 for the tracker
     networks:
       - webtorrent-net
-
+    restart: unless-stopped
+    
   seed-server:
     build: ./seed-server
     image: open-quran-seeder:1.1
@@ -17,7 +18,8 @@ services:
       - webtorrent-net
     depends_on:
       - tracker
-
+    restart: unless-stopped  
+    
 networks:
   webtorrent-net:
     driver: bridge  # Ensure network is using the bridge driver
