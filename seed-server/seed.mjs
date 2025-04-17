@@ -8,7 +8,7 @@ import getInfoHashFromMagnetLink from './utils/getInfoHashFromMagnetLink.js';
 import MAGNETLINKS from './constants/MAGNETLINKS.js';
 
 // CONSTANTS
-const DOWNLOAD_PATH = '/app/downloads';
+const DOWNLOAD_PATH = '/app/downloads'; // Assuming this path is correct inside the container/server environment
 const MAX_CONNS = 100;
 const MAX_LISTENERS = 20;
 const MAX_CONCURRENT_DOWNLOADS = 3;
@@ -55,7 +55,7 @@ const options = {
 async function processMagnetLinks() {
   let fetchedMAGNETLINKS = MAGNETLINKS; // Default fallback
   try {
-    const response = await fetch('https://tilawa.quran.us.kg/api/magnet-uris');
+    const response = await fetch('https://quran.us.kg/api/magnet-uris');
 
     // Check if the request was successful (status code 2xx)
     if (response.ok) {
@@ -65,7 +65,7 @@ async function processMagnetLinks() {
         const data = await response.json(); // Parse JSON only if checks pass
         if (data && Array.isArray(data.magneturis)) {
            fetchedMAGNETLINKS = data.magneturis;
-           log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from tilawa.quran.us.kg/api/magnet-uris`);
+           log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from quran.us.kg/api/magnet-uris`);
         } else {
            log.warning('API response did not contain a valid magneturis array. Using default magnet links.');
         }
@@ -84,64 +84,80 @@ async function processMagnetLinks() {
 
 
   for (const magnet of fetchedMAGNETLINKS) {
-    // Extract the info hash from the magnet link
     const infoHash = getInfoHashFromMagnetLink(magnet);
 
-    // Try to acquire new slote
+    // Acquire semaphore slot before processing
     await semaphore.acquire();
 
     if (!infoHash) {
       log.error('Invalid magnet link:', magnet);
-      await semaphore.release();
-
+      semaphore.release(); // Release slot if magnet is invalid
       continue;
     }
 
     try {
-      // Check if the torrent already exists (removed unnecessary await)
-      const torrent = client.get(infoHash);
-      if (torrent) {
-        const name = torrent.name;
-        const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
-        const totalSize = (torrent.length / (1024 * 1024)).toFixed(2); // Total size in MB
-        log.info(`Name: ${name}, Progress: ${progress}%, Total Size: ${totalSize} MB`)
-        log.warning(`Torrent ${name} (${infoHash}) - ${totalSize} MB already added; skipping.`)
-        semaphore.release();
-        continue;
-      }
-
+      // Let client.add handle adding or retrieving existing torrent
       client.add(magnet, options, function (torrent) {
-        log.peer(`Torrent added: ${torrent.infoHash}`);
+        // Check if torrent was already completed *before* this script ran
+        // Note: torrent.progress might be 1 even if just added if files exist
+        if (torrent.done) {
+            log.warning(`Torrent ${torrent.name || infoHash} already completed. Seeding.`);
+            // We still want to seed completed torrents, so don't release semaphore here immediately
+            // unless you only want to download, not seed long-term.
+        } else {
+            log.peer(`Adding/Resuming torrent: ${torrent.name || infoHash}`);
+        }
 
         // Add speed tracking interval
         const speedInterval = setInterval(() => {
-          log.stats(
-            `[${torrent.name}] ↓ ${formatSpeed(
-              torrent.downloadSpeed
-            )}/s | ↑ ${formatSpeed(torrent.uploadSpeed)}/s | ` +
-            `Progress: ${(torrent.progress * 100).toFixed(1)}%`
-          )
+          // Check if torrent object still exists and has data
+          if (torrent && torrent.name !== undefined) {
+            log.stats(
+              `[${torrent.name}] ↓ ${formatSpeed(
+                torrent.downloadSpeed
+              )}/s | ↑ ${formatSpeed(torrent.uploadSpeed)}/s | ` +
+              `Peers: ${torrent.numPeers} | Progress: ${(torrent.progress * 100).toFixed(1)}%`
+            );
+          } else if (torrent) {
+             log.stats(`[${infoHash}] Waiting for metadata... Peers: ${torrent.numPeers}`);
+          }
         }, 5000); // Update every 5 seconds
 
         const cleanup = () => {
           clearInterval(speedInterval);
-          semaphore.release();
-          torrent.removeAllListeners();
+          semaphore.release(); // Release semaphore slot when done or error
+          // Avoid removing all listeners if you want the client to keep seeding
+          // torrent.removeAllListeners();
         };
 
-        torrent.on('done', () => {
-          log.peer(`Download completed: ${torrent.name}`);
+        // Use 'ready' event to log when metadata is available
+        torrent.once('ready', () => {
+            log.success(`Metadata ready for: ${torrent.name} (${infoHash}) - Size: ${(torrent.length / (1024 * 1024)).toFixed(2)} MB`);
+        });
+
+        torrent.once('done', () => { // Use 'once' to avoid multiple triggers if script restarts
+          log.success(`Download completed: ${torrent.name}`);
+          // Decide if you want to stop tracking/release semaphore on 'done'
+          // If you want to seed indefinitely, you might not call cleanup() here.
+          // For now, let's assume we release the slot after download.
           cleanup();
         });
 
-        torrent.on('error', (err) => {
-          log.error(`Error in torrent ${torrent.name}: ${err.message}`);
+        torrent.once('error', (err) => { // Use 'once'
+          log.error(`Error in torrent ${torrent.name || infoHash}: ${err.message}`);
           cleanup();
         });
+
+        // Handle cases where torrent is added but might already be seeding (no 'done' event fires)
+        // If torrent.progress is 1 when added, we might need to handle semaphore release differently
+        // if we only want MAX_CONCURRENT_DOWNLOADS active *downloads*.
+        // For now, the semaphore limits concurrent add operations + active downloads/seeds tracked by intervals.
 
       });
     } catch (error) {
-      log.error(`Error processing magnet link ${infoHash}: ${error.message}`);
+      // This catch block might be less likely to trigger now,
+      // as client.add usually emits 'error' event instead of throwing.
+      log.error(`Error during client.add for ${infoHash}: ${error.message}`);
       semaphore.release();
     }
   }
