@@ -53,15 +53,35 @@ const options = {
 };
 
 async function processMagnetLinks() {
-  const response = await fetch('https://quran.us.kg/api/magnet-uris');
-  const { magneturis } = await response.json();
-  let fetchedMAGNETLINKS = magneturis
-  if (!Array.isArray(fetchedMAGNETLINKS)) {
-    log.warning('Failed to fetch magnet links from quran.us.kg/api/magnet-uris, loading default magnet links');
-    fetchedMAGNETLINKS = MAGNETLINKS;
-  } else {
-    log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from quran.us.kg/api/magnet-uris`);
+  let fetchedMAGNETLINKS = MAGNETLINKS; // Default fallback
+  try {
+    const response = await fetch('https://quran.us.kg/api/magnet-uris');
+
+    // Check if the request was successful (status code 2xx)
+    if (response.ok) {
+      const contentType = response.headers.get('content-type');
+      // Check if the content type indicates JSON
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json(); // Parse JSON only if checks pass
+        if (data && Array.isArray(data.magneturis)) {
+           fetchedMAGNETLINKS = data.magneturis;
+           log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from quran.us.kg/api/magnet-uris`);
+        } else {
+           log.warning('API response did not contain a valid magneturis array. Using default magnet links.');
+        }
+      } else {
+        // Log warning if content type is not JSON (e.g., HTML error page)
+        log.warning(`Received non-JSON response from API (Content-Type: ${contentType}). Using default magnet links.`);
+      }
+    } else {
+      // Log warning if the HTTP status code indicates an error (e.g., 404, 500)
+      log.warning(`API request failed with status ${response.status}. Using default magnet links.`);
+    }
+  } catch (fetchError) {
+    // Log error if the fetch itself fails (e.g., network issue, DNS error)
+    log.error(`Failed to fetch magnet links from API: ${fetchError.message}. Using default magnet links.`);
   }
+
 
   for (const magnet of fetchedMAGNETLINKS) {
     // Extract the info hash from the magnet link
@@ -78,8 +98,8 @@ async function processMagnetLinks() {
     }
 
     try {
-      // Check if the torrent already exists
-      const torrent = await client.get(infoHash);
+      // Check if the torrent already exists (removed unnecessary await)
+      const torrent = client.get(infoHash);
       if (torrent) {
         const name = torrent.name;
         const progress = (torrent.progress * 100).toFixed(2); // Progress as a percentage
@@ -121,7 +141,7 @@ async function processMagnetLinks() {
 
       });
     } catch (error) {
-      log.error(`Error processing magnet link: ${error.message}`);
+      log.error(`Error processing magnet link ${infoHash}: ${error.message}`);
       semaphore.release();
     }
   }
