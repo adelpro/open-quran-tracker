@@ -55,7 +55,7 @@ const options = {
 async function processMagnetLinks() {
   let fetchedMAGNETLINKS = MAGNETLINKS; // Default fallback
   try {
-    const response = await fetch('https://quran.us.kg/api/magnet-uris');
+    const response = await fetch('https://tracker.quran.us.kg/api/magnet-uris');
 
     // Check if the request was successful (status code 2xx)
     if (response.ok) {
@@ -65,7 +65,7 @@ async function processMagnetLinks() {
         const data = await response.json(); // Parse JSON only if checks pass
         if (data && Array.isArray(data.magneturis)) {
            fetchedMAGNETLINKS = data.magneturis;
-           log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from quran.us.kg/api/magnet-uris`);
+           log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from tracker.quran.us.kg/api/magnet-uris`);
         } else {
            log.warning('API response did not contain a valid magneturis array. Using default magnet links.');
         }
