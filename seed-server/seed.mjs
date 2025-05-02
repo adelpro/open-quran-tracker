@@ -50,12 +50,12 @@ const options = {
 };
 
 async function processMagnetLinks() {
-  let fetchedMAGNETLINKS = await fetch('https://openquran.us.kg/api/magnet-uris');
+  let fetchedMAGNETLINKS = await fetch('https://tilawa.quran.us.kg/api/magnet-uris');
   if (!fetchedMAGNETLINKS) {
-    log.warning('Failed to fetch magnet links from openquran.us.kg/api/magnet-uris, loading default magnet links');
+    log.warning('Failed to fetch magnet links from tilawa.quran.us.kg/api/magnet-uris, loading default magnet links');
     fetchedMAGNETLINKS = MAGNETLINKS;
   } else {
-    log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from openquran.us.kg/api/magnet-uris`);
+    log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from tilawa.quran.us.kg/api/magnet-uris`);
   }
 
   for (const magnet of fetchedMAGNETLINKS) {
