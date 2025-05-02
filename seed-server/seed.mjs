@@ -50,12 +50,16 @@ const options = {
 };
 
 async function processMagnetLinks() {
-  let fetchedMAGNETLINKS = await fetch('https://tilawa.quran.us.kg/api/magnet-uris');
-  if (!fetchedMAGNETLINKS) {
+  let fetchedMAGNETLINKS;
+  try {
+    const response = await fetch('https://tilawa.quran.us.kg/api/magnet-uris');
+    if (!response.ok) throw new Error('Network response was not ok');
+    fetchedMAGNETLINKS = await response.json();
+    if (!Array.isArray(fetchedMAGNETLINKS)) throw new Error('Response is not an array');
+    log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from tilawa.quran.us.kg/api/magnet-uris`);
+  } catch (err) {
     log.warning('Failed to fetch magnet links from tilawa.quran.us.kg/api/magnet-uris, loading default magnet links');
     fetchedMAGNETLINKS = MAGNETLINKS;
-  } else {
-    log.success(`🔗 Fetched ${fetchedMAGNETLINKS.length} magnet links from tilawa.quran.us.kg/api/magnet-uris`);
   }
 
   for (const magnet of fetchedMAGNETLINKS) {
@@ -68,7 +72,6 @@ async function processMagnetLinks() {
     if (!infoHash) {
       log.error('Invalid magnet link:', magnet);
       await semaphore.release();
-
       continue;
     }
 
