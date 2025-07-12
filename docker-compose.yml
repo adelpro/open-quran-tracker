@@ -4,7 +4,7 @@ services:
     image: open-quran-tracker:1.1
     container_name: open-quran-tracker
     ports:
-      - "8083:8083" # Map port 8083 for the tracker
+      - "8083:8083"
     networks:
       - webtorrent-net
 
@@ -13,8 +13,11 @@ services:
     image: open-quran-seeder:1.1
     container_name: open-quran-seeder
     volumes:
-      - ./seed-server/seed.mjs:/app/seed.mjs # Mount your seed.js script
-      - seed_downloads:/app/downloads # Mount the downloads directory
+      - ./seed-server/seed.mjs:/app/seed.mjs
+      - seed_downloads:/app/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
     networks:
       - webtorrent-net
     depends_on:
@@ -22,7 +25,7 @@ services:
 
 networks:
   webtorrent-net:
-    driver: bridge # Ensure network is using the bridge driver
+    driver: bridge
 
 volumes:
   seed_downloads:
