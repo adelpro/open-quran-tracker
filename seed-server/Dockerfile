@@ -16,16 +16,19 @@ RUN npm ci --omit=dev
 # Copy the rest of the app files with correct ownership
 COPY --chown=seeder:seeder . .
 
-# Create downloads directory and fix ownership
+# Create downloads directory (if not existing) and fix ownership
 RUN mkdir -p /app/downloads \
     && chown -R seeder:seeder /app/downloads
 
-# Switch to non-root user
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 USER seeder
 
-# Expose necessary ports (adjust if needed)
 EXPOSE 6881
 EXPOSE 6881/udp
 
-# Default command to run the seed script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
 CMD ["node", "seed.mjs"]
